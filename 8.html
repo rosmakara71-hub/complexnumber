@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>កម្រងសំណួរនិងលំហាត់វាស់ស្ទង់សមត្ថភាព</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;700&family=Moul&display=swap');
+        
+        body {
+            font-family: 'Kantumruy Pro', sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            color: #1e293b;
+        }
+        .exam-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px double #1e3a8a;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .kingdom {
+            font-family: 'Moul', sans-serif;
+            font-size: 16px;
+            margin: 0 0 5px 0;
+            color: #1e3a8a;
+        }
+        .exam-title {
+            font-family: 'Moul', sans-serif;
+            font-size: 18px;
+            color: #b91c1c;
+            margin: 20px 0 5px 0;
+            line-height: 1.6;
+        }
+        .author {
+            font-size: 14px;
+            font-weight: bold;
+            color: #334155;
+            margin-top: 5px;
+        }
+        .student-info-box {
+            background-color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            border: 1px solid #e2e8f0;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .input-group label {
+            font-weight: bold;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #334155;
+        }
+        .input-group input {
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: 'Kantumruy Pro', sans-serif;
+            font-size: 14px;
+            outline: none;
+        }
+        .input-group input:focus {
+            border-color: #1e3a8a;
+        }
+        .sticky-bar {
+            position: sticky;
+            top: 10px;
+            background: #fff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            z-index: 1000;
+            border-left: 6px solid #1e3a8a;
+        }
+        .question-card {
+            display: none;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+        .question-card.active {
+            display: block;
+        }
+        .question-card:hover {
+            border-color: #1e3a8a;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.05);
+        }
+        .question-text {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 18px;
+            color: #0f172a;
+            line-height: 1.8;
+        }
+        .points {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: normal;
+        }
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 10px;
+        }
+        @media (max-width: 650px) {
+            .options-container { grid-template-columns: 1fr; }
+            .student-info-box { grid-template-columns: 1fr; }
+        }
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+        }
+        .option-label:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+        .option-label input {
+            margin-right: 12px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+        .solution-box {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            border-radius: 6px;
+            font-size: 14.5px;
+            line-height: 1.7;
+            color: #1e293b;
+        }
+        .solution-title {
+            font-weight: bold;
+            color: #16a34a;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        .navigation-box {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            gap: 15px;
+        }
+        .nav-btn {
+            padding: 12px 25px;
+            background: #64748b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Kantumruy Pro', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .nav-btn:hover {
+            background: #475569;
+        }
+        .nav-btn.next-btn {
+            background: #2563eb;
+        }
+        .nav-btn.next-btn:hover {
+            background: #1d4ed8;
+        }
+        
+        .submit-btn {
+            display: none;
+            width: 100%;
+            padding: 16px;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Kantumruy Pro', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(30, 58, 138, 0.15);
+            transition: background 0.3s;
+        }
+        .submit-btn:hover {
+            background: #1d4ed8;
+        }
+        .result-box {
+            display: none;
+            background: #eff6ff;
+            border: 2px solid #2563eb;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .result-title {
+            font-family: 'Moul', sans-serif;
+            color: #1e3a8a;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        .grade-badge {
+            display: inline-block;
+            font-size: 36px;
+            font-weight: bold;
+            padding: 5px 30px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-family: sans-serif;
+        }
+        .grade-A { background-color: #d1fae5; color: #065f46; border: 2px solid #34d399; }
+        .grade-B { background-color: #e0f2fe; color: #075985; border: 2px solid #38bdf8; }
+        .grade-C { background-color: #fef9c3; color: #854d0e; border: 2px solid #facc15; }
+        .grade-D { background-color: #ffedd5; color: #9a3412; border: 2px solid #fb923c; }
+        .grade-E { background-color: #f3e8ff; color: #6b21a8; border: 2px solid #c084fc; }
+        .grade-F { background-color: #fee2e2; color: #991b1b; border: 2px solid #f87171; }
+
+        .correct-flash { background: #d1fae5 !important; border-color: #10b981 !important; }
+        .incorrect-flash { background: #fee2e2 !important; border-color: #ef4444 !important; }
+    </style>
+<a href="index.html" style="padding: 8px 16px; background: #e2e8f0; color: #333; text-decoration: none; border-radius: 5px; font-family: sans-serif;">
+    ⬅ ថយក្រោយ
+</a>
+</head>
+<body>
+
+    <div class="exam-container">
+        <div class="header">
+            <div class="kingdom">ព្រះរាជាណាចក្រកម្ពុជា</div>
+            <div class="kingdom" style="font-size: 13px;">ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+<div class="exam-title">វិញ្ញាសាវាស់ស្ទង់សមត្ថភាពសិស្ស ( <span id="lesson-id"></span> )</div>
+
+            <div class="author">រៀបរៀង និងផ្ទៀងផ្ទាត់ដោយ៖ លោកគ្រូ រស់ មករា</div>
+        </div>
+
+        <div class="student-info-box" id="infoBox">
+            <div class="input-group">
+                <label for="studentName">នាមត្រកូល និងនាមខ្លួនបេក្ខជន *</label>
+                <input type="text" id="studentName" placeholder="តើអ្នកឈ្មោះអ្វី?" required>
+            </div>
+            <div class="input-group">
+                <label for="studentClass">ថ្នាក់/បន្ទប់សិក្សា *</label>
+                <input type="text" id="studentClass" placeholder="តើអ្នករៀនថ្នាក់ណា?" required>
+            </div>
+        </div>
+
+        <div class="sticky-bar">
+            <div style="font-weight: bold; color: #1e3a8a;" id="progressDisplay">លំហាត់ទី ១/--</div>
+            <div style="font-weight: bold; color: #1e3a8a;">ពិន្ទុរួម៖ <span id="totalPointsDisplay">0</span></div>
+        </div>
+
+        <div class="result-box" id="resultBox">
+            <div class="result-title">លទ្ធផលប្រឡង</div>
+
+            <p id="studentResultName" style="font-weight: bold; font-size: 16px; margin-bottom: 5px;"></p>
+<p style="font-size: 16px; color: #475569; font-weight: bold; margin: 5px 0 15px 0;">
+                ⏱️ ចំណាយពេល៖ <span id="timeSpentDisplay" style="color: #b91c1c;"></span>
+            </p>
+            <p style="font-size: 24px; color: #1e293b; font-weight: bold; margin: 10px 0 5px 0;">ពិន្ទុទទួលបាន៖ <span id="scoreDisplay">0</span> / <span id="maxPointsDisplay">0</span> (<span id="percentDisplay">0</span>%)</p>
+            
+            
+
+            <div><span id="gradeDisplay" class="grade-badge">F</span></div>
+            <p id="gradeComment" style="font-weight: bold; color: #475569; font-size: 15px; margin-bottom: 15px;"></p>
+            
+            <p style="color: #16a34a; font-weight: bold; margin-top: 12px; border-top: 1px dashed #cbd5e1; padding-top: 15px;">👇 សូមពិនិត្យវិធីសាស្ត្រដោះស្រាយលម្អិតនៅខាងក្រោមសំនួរនីមួយៗ!</p>
+        </div>
+
+        <form id="quizForm" onsubmit="submitExam(event)">                    
+            <div id="questionsContainer">                
+                
+<div class="question-card" data-qindex="26">
+    <div class="question-text">
+        <span class="q-number">២៦.</span> គណនាផលគុណ $(2 + 3i)(2 - 3i)$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q26" value="W1"> $4 - 9i$</label>
+        <label class="option-label"><input type="radio" name="q26" value="W2"> $-5$</label>
+        <label class="option-label"><input type="radio" name="q26" value="C" data-correct="true"> $13$</label>
+        <label class="option-label"><input type="radio" name="q26" value="W3"> $4 + 12i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$(2+3i)(2-3i) = 2^2 - (3i)^2 = 4 - 9i^2 = 4 + 9 = 13$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="27">
+    <div class="question-text">
+        <span class="q-number">២៧.</span> សម្រួលកន្សោម $\frac{5}{i}$ ជាទម្រង់ពីជគណិត។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q27" value="W1"> $5i$</label>
+        <label class="option-label"><input type="radio" name="q27" value="C" data-correct="true"> $-5i$</label>
+        <label class="option-label"><input type="radio" name="q27" value="W2"> $-5$</label>
+        <label class="option-label"><input type="radio" name="q27" value="W3"> $\frac{1}{5}i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>គុណនឹង $i$ ទាំងភាគយកនិងភាគបែង៖ $\frac{5i}{i^2} = \frac{5i}{-1} = -5i$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="28">
+    <div class="question-text">
+        <span class="q-number">២៨.</span> រកផ្នែកពិត និងផ្នែកស្រមៃនៃចំនួនកុំផ្លិច $z = \frac{3-i}{2}$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q28" value="W1"> ផ្នែកពិត $3$, ផ្នែកស្រមៃ $-1$</label>
+        <label class="option-label"><input type="radio" name="q28" value="C" data-correct="true"> ផ្នែកពិត $\frac{3}{2}$, ផ្នែកស្រមៃ $-\frac{1}{2}$</label>
+        <label class="option-label"><input type="radio" name="q28" value="W2"> ផ្នែកពិត $\frac{3}{2}$, ផ្នែកស្រមៃ $\frac{1}{2}$</label>
+        <label class="option-label"><input type="radio" name="q28" value="W3"> ផ្នែកពិត $3$, ផ្នែកស្រមៃ $-i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>ផ្ដាច់ភាគបែង៖ $z = \frac{3}{2} - \frac{1}{2}i$។ ដូចនេះ $\text{Re}(z)=\frac{3}{2}$ និង $\text{Im}(z)=-\frac{1}{2}$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="29">
+    <div class="question-text">
+        <span class="q-number">២៩.</span> គណនាតម្លៃនៃ $(1+i)^3$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q29" value="W1"> $2i$</label>
+        <label class="option-label"><input type="radio" name="q29" value="W2"> $-2 + 2i$</label>
+        <label class="option-label"><input type="radio" name="q29" value="C" data-correct="true"> $-2 + 2i$</label>
+        <label class="option-label"><input type="radio" name="q29" value="W3"> $2 - 2i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$(1+i)^3 = (1+i)^2(1+i) = 2i(1+i) = 2i + 2i^2 = -2 + 2i$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="30">
+    <div class="question-text">
+        <span class="q-number">៣០.</span> រកតម្លៃ $x$ និង $y$ ជាចំនួនពិតដែលផ្ទៀងផ្ទាត់សមភាព $x + yi = 4 - i$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q30" value="W1"> $x = 4, y = 1$</label>
+        <label class="option-label"><input type="radio" name="q30" value="C" data-correct="true"> $x = 4, y = -1$</label>
+        <label class="option-label"><input type="radio" name="q30" value="W2"> $x = -4, y = -1$</label>
+        <label class="option-label"><input type="radio" name="q30" value="W3"> $x = 1, y = 4$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>ផ្ទឹមផ្នែកពិតនិងផ្នែកពិត ផ្នែកស្រមៃនិងផ្នែកស្រមៃ៖ $x = 4$ និង $y = -1$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="31">
+    <div class="question-text">
+        <span class="q-number">៣១.</span> សរសេរចំនួនកុំផ្លិច $z = -2$ ជាទម្រង់ត្រីកោណមាត្រ។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q31" value="W1"> $2(\cos 0 + i\sin 0)$</label>
+        <label class="option-label"><input type="radio" name="q31" value="C" data-correct="true"> $2(\cos \pi + i\sin \pi)$</label>
+        <label class="option-label"><input type="radio" name="q31" value="W2"> $2(\cos \frac{\pi}{2} + i\sin \frac{\pi}{2})$</label>
+        <label class="option-label"><input type="radio" name="q31" value="W3"> $-2(\cos \pi + i\sin \pi)$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$|z| = 2$, ដោយសារ $z$ ស្ថិតនៅលើអ័ក្សពិតអវិជ្ជមាន នាំឱ្យ $\theta = \pi$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="32">
+    <div class="question-text">
+        <span class="q-number">៣២.</span> សរសេរចំនួនកុំផ្លិច $z = -i$ ជាទម្រង់ត្រីកោណមាត្រ។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q32" value="W1"> $\cos \frac{\pi}{2} + i\sin \frac{\pi}{2}$</label>
+        <label class="option-label"><input type="radio" name="q32" value="W2"> $\cos \pi + i\sin \pi$</label>
+        <label class="option-label"><input type="radio" name="q32" value="C" data-correct="true"> $\cos(-\frac{\pi}{2}) + i\sin(-\frac{\pi}{2})$</label>
+        <label class="option-label"><input type="radio" name="q32" value="W3"> $\cos \frac{3\pi}{2} - i\sin \frac{3\pi}{2}$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$|z| = 1$, មុំអាគុយម៉ង់ចម្បងគឺ $-\frac{\pi}{2}$ (ឬ $\frac{3\pi}{2}$)។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="33">
+    <div class="question-text">
+        <span class="q-number">៣៣.</span> សរសេរ $z = -1 + i\sqrt{3}$ ជាទម្រង់ត្រីកោណមាត្រ។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q33" value="W1"> $2(\cos \frac{\pi}{3} + i\sin \frac{\pi}{3})$</label>
+        <label class="option-label"><input type="radio" name="q33" value="C" data-correct="true"> $2(\cos \frac{2\pi}{3} + i\sin \frac{2\pi}{3})$</label>
+        <label class="option-label"><input type="radio" name="q33" value="W2"> $2(\cos \frac{4\pi}{3} + i\sin \frac{4\pi}{3})$</label>
+        <label class="option-label"><input type="radio" name="q33" value="W3"> $\sqrt{2}(\cos \frac{2\pi}{3} + i\sin \frac{2\pi}{3})$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$|z| = \sqrt{(-1)^2+(\sqrt{3})^2} = 2$។ កុំផ្លិចស្ថិតក្នុងកាដ្រង់ទី ២ នាំឱ្យ $\theta = \pi - \frac{\pi}{3} = \frac{2\pi}{3}$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="34">
+    <div class="question-text">
+        <span class="q-number">៣៤.</span> បើ $z = 2(\cos \frac{\pi}{6} + i\sin \frac{\pi}{6})$ តើទម្រង់ពីជគណិតរបស់ $z$ គឺអ្វី?
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q34" value="W1"> $1 + i\sqrt{3}$</label>
+        <label class="option-label"><input type="radio" name="q34" value="C" data-correct="true"> $\sqrt{3} + i$</label>
+        <label class="option-label"><input type="radio" name="q34" value="W2"> $\sqrt{3} - i$</label>
+        <label class="option-label"><input type="radio" name="q34" value="W3"> $2 + 2i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$z = 2(\frac{\sqrt{3}}{2} + i \cdot \frac{1}{2}) = \sqrt{3} + i$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="35">
+    <div class="question-text">
+        <span class="q-number">៣៥.</span> គណនាផលចែក $\frac{z_1}{z_2}$ បើ $z_1 = 4(\cos \frac{\pi}{2} + i\sin \frac{\pi}{2})$ និង $z_2 = 2(\cos \frac{\pi}{6} + i\sin \frac{\pi}{6})$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q35" value="W1"> $2(\cos \frac{2\pi}{3} + i\sin \frac{2\pi}{3})$</label>
+        <label class="option-label"><input type="radio" name="q35" value="C" data-correct="true"> $2(\cos \frac{\pi}{3} + i\sin \frac{\pi}{3})$</label>
+        <label class="option-label"><input type="radio" name="q35" value="W2"> $2(\cos \frac{\pi}{4} + i\sin \frac{\pi}{4})$</label>
+        <label class="option-label"><input type="radio" name="q35" value="W3"> $6(\cos \frac{\pi}{3} + i\sin \frac{\pi}{3})$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>តាមរូបមន្តផលចែក៖ ចែកមូឌុល ដកអាគុយម៉ង់ $\frac{4}{2} = 2$ និង $\frac{\pi}{2} - \frac{\pi}{6} = \frac{\pi}{3}$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="36">
+    <div class="question-text">
+        <span class="q-number">៣៦.</span> តាមទ្រឹស្តីបទដឺម័រ (De Moivre's Theorem) កន្សោម $(\cos \theta + i\sin \theta)^{-1}$ ស្មើនឹង៖
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q36" value="W1"> $\cos \theta - i\sin \theta$</label>
+        <label class="option-label"><input type="radio" name="q36" value="C" data-correct="true"> $\cos \theta - i\sin \theta$</label>
+        <label class="option-label"><input type="radio" name="q36" value="W2"> $-\cos \theta - i\sin \theta$</label>
+        <label class="option-label"><input type="radio" name="q36" value="W3"> $\cos \theta + i\sin \theta$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$(\cos \theta + i\sin \theta)^{-1} = \cos(-\theta) + i\sin(-\theta) = \cos \theta - i\sin \theta$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="37">
+    <div class="question-text">
+        <span class="q-number">៣៧.</span> គណនា $[\sqrt{2}(\cos \frac{\pi}{4} + i\sin \frac{\pi}{4})]^4$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q37" value="W1"> $4$</label>
+        <label class="option-label"><input type="radio" name="q37" value="C" data-correct="true"> $-4$</label>
+        <label class="option-label"><input type="radio" name="q37" value="W2"> $4i$</label>
+        <label class="option-label"><input type="radio" name="q37" value="W3"> $-4i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$(\sqrt{2})^4[\cos(4 \cdot \frac{\pi}{4}) + i\sin(4 \cdot \frac{\pi}{4})] = 4(\cos \pi + i\sin \pi) = 4(-1 + 0) = -4$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="38">
+    <div class="question-text">
+        <span class="q-number">៣៨.</span> គណនាតម្លៃនៃ $(-\frac{1}{2} + i\frac{\sqrt{3}}{2})^3$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q38" value="W1"> $-1$</label>
+        <label class="option-label"><input type="radio" name="q38" value="C" data-correct="true"> $1$</label>
+        <label class="option-label"><input type="radio" name="q38" value="W2"> $i$</label>
+        <label class="option-label"><input type="radio" name="q38" value="W3"> $-i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>ទម្រង់ត្រីកោណមាត្រគឺ $\cos \frac{2\pi}{3} + i\sin \frac{2\pi}{3}$។ លើកជាស្វ័យគុណ ៣ គឺ $\cos(2\pi) + i\sin(2\pi) = 1$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="39">
+    <div class="question-text">
+        <span class="q-number">៣៩.</span> គណនាតម្លៃ $i^{50}$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q39" value="W1"> $1$</label>
+        <label class="option-label"><input type="radio" name="q39" value="C" data-correct="true"> $-1$</label>
+        <label class="option-label"><input type="radio" name="q39" value="W2"> $i$</label>
+        <label class="option-label"><input type="radio" name="q39" value="W3"> $-i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$50 = 4 \times 12 + 2$ នាំឱ្យ $i^{50} = i^2 = -1$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="40">
+    <div class="question-text">
+        <span class="q-number">៤០.</span> គណនាតម្លៃកន្សោម $(1-i)^6$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q40" value="W1"> $-8$</label>
+        <label class="option-label"><input type="radio" name="q40" value="W2"> $8i$</label>
+        <label class="option-label"><input type="radio" name="q40" value="C" data-correct="true"> $8i$</label>
+        <label class="option-label"><input type="radio" name="q40" value="W3"> $-8i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$(1-i)^6 = [(1-i)^2]^3 = (-2i)^3 = -8i^3 = -8(-i) = 8i$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="41">
+    <div class="question-text">
+        <span class="q-number">៤១.</span> រកឫសការេនៃ $-9$ ក្នុងសំណុំចំនួនកុំផ្លិច។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q41" value="W1"> $\pm 3$</label>
+        <label class="option-label"><input type="radio" name="q41" value="C" data-correct="true"> $\pm 3i$</label>
+        <label class="option-label"><input type="radio" name="q41" value="W2"> $-3i$</label>
+        <label class="option-label"><input type="radio" name="q41" value="W3"> $\pm 9i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$z^2 = -9 = 9i^2 \Rightarrow z = \pm 3i$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="42">
+    <div class="question-text">
+        <span class="q-number">៤២.</span> តើចំនួនឫសទី ៥ នៃចំនួនកុំផ្លិច $z = 1+i$ មានចំនួនប៉ុន្មាន?
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q42" value="W1"> ១</label>
+        <label class="option-label"><input type="radio" name="q42" value="W2"> ២</label>
+        <label class="option-label"><input type="radio" name="q42" value="C" data-correct="true"> ៥</label>
+        <label class="option-label"><input type="radio" name="q42" value="W3"> ១០</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>ក្នុងសំណុំកុំផ្លិច គ្រប់ចំនួនកុំផ្លិចមិនសូន្យតែងមានឫសទី $n$ ចំនួន $n$ ផ្សេងគ្នាជានិច្ច។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="43">
+    <div class="question-text">
+        <span class="q-number">៤៣.</span> ឫសគូប (ឫសទី ៣) នៃ $-1$ មួយក្នុងចំណោមទាំងអស់គឺ៖
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q43" value="W1"> $1$</label>
+        <label class="option-label"><input type="radio" name="q43" value="C" data-correct="true"> $-1$</label>
+        <label class="option-label"><input type="radio" name="q43" value="W2"> $i$</label>
+        <label class="option-label"><input type="radio" name="q43" value="W3"> $-i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$(-1)^3 = -1$ ដូចនេះ $-1$ គឺជាឫសគូបពិតប្រាកដមួយរបស់ $-1$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="44">
+    <div class="question-text">
+        <span class="q-number">៤៤.</span> រកឫសការេនៃចំនួនកុំផ្លិច $z = -2i$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q44" value="W1"> $\pm (1+i)$</label>
+        <label class="option-label"><input type="radio" name="q44" value="C" data-correct="true"> $\pm (1-i)$</label>
+        <label class="option-label"><input type="radio" name="q44" value="W2"> $\pm (2-i)$</label>
+        <label class="option-label"><input type="radio" name="q44" value="W3"> $\pm i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$(1-i)^2 = 1 - 2i + i^2 = -2i$ ដូចនេះឫសការេគឺ $\pm (1-i)$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="45">
+    <div class="question-text">
+        <span class="q-number">៤៥.</span> ក្នុងប្លង់កុំផ្លិច ឫសទី $n$ ទាំងឡាយនៃចំនួនកុំផ្លិចមួយ ស្ថិតនៅលើអ្វី?
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q45" value="W1"> បន្ទាត់ត្រង់ស្របអ័ក្សពិត</label>
+        <label class="option-label"><input type="radio" name="q45" value="C" data-correct="true"> រង្វង់ដែលមានផ្ចិតត្រង់គល់តម្រុយ $O$</label>
+        <label class="option-label"><input type="radio" name="q45" value="W2"> ខ្សែកោងប៉ារ៉ាបូល</label>
+        <label class="option-label"><input type="radio" name="q45" value="W3"> អ័ក្សស្រមើស្រមៃទាំងស្រុង</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>ឫសទី $n$ ទាំងអស់មានមូឌុលស្មើៗគ្នា ដូចនេះវាស្ថិតនៅលើរង្វង់តែមួយដែលមានកាំ $R = \sqrt[n]{r}$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="46">
+    <div class="question-text">
+        <span class="q-number">៤៦.</span> ដោះស្រាយសមីការ $z^2 + 4 = 0$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q46" value="W1"> $\pm 2$</label>
+        <label class="option-label"><input type="radio" name="q46" value="C" data-correct="true"> $\pm 2i$</label>
+        <label class="option-label"><input type="radio" name="q46" value="W2"> $\pm 4i$</label>
+        <label class="option-label"><input type="radio" name="q46" value="W3"> $2 \pm i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$z^2 = -4 = 4i^2 \Rightarrow z = \pm 2i$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="47">
+    <div class="question-text">
+        <span class="q-number">៤៧.</span> រកឫសនៃសមីការ $z^2 + 2z + 2 = 0$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q47" value="W1"> $1 \pm i$</label>
+        <label class="option-label"><input type="radio" name="q47" value="C" data-correct="true"> $-1 \pm i$</label>
+        <label class="option-label"><input type="radio" name="q47" value="W2"> $-1 \pm 2i$</label>
+        <label class="option-label"><input type="radio" name="q47" value="W3"> $\pm 2i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$\Delta' = 1^2 - 1(2) = -1 = i^2 \Rightarrow z = -1 \pm i$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="48">
+    <div class="question-text">
+        <span class="q-number">៤៨.</span> បើ $z = 1+i$ ជាឫសមួយនៃសមីការដឺក្រេទី២ ដែលមានមេគុណជាចំនួនពិត តើឫសមួយទៀតគឺអ្វី?
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q48" value="W1"> $-1 - i$</label>
+        <label class="option-label"><input type="radio" name="q48" value="W2"> $-1 + i$</label>
+        <label class="option-label"><input type="radio" name="q48" value="C" data-correct="true"> $1 - i$</label>
+        <label class="option-label"><input type="radio" name="q48" value="W3"> $i - 1$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>បើមេគុណជាចំនួនពិត ឫសកុំផ្លិចតែងតែកើតឡើងជាគូកុំផ្លិចសម្ព័ន្ធគ្នា ($\overline{z} = 1-i$)។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="49">
+    <div class="question-text">
+        <span class="q-number">៤៩.</span> ដោះស្រាយសមីការ $z^2 - 2z + 5 = 0$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q49" value="W1"> $1 \pm i$</label>
+        <label class="option-label"><input type="radio" name="q49" value="W2"> $2 \pm i$</label>
+        <label class="option-label"><input type="radio" name="q49" value="C" data-correct="true"> $1 \pm 2i$</label>
+        <label class="option-label"><input type="radio" name="q49" value="W3"> $-1 \pm 2i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>$\Delta' = (-1)^2 - 1(5) = -4 = (2i)^2 \Rightarrow z = 1 \pm 2i$។</li>
+        </ul>
+    </div>
+</div>
+
+<div class="question-card" data-qindex="50">
+    <div class="question-text">
+        <span class="q-number">៥០.</span> រកតួចុងក្រោយនៃពិជគណិតដើម្បីបំពេញសមីការ៖ $z^2 - 2iz - 1 = 0$ មានឫសឌុបគឺ៖
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q50" value="W1"> $1$</label>
+        <label class="option-label"><input type="radio" name="q50" value="W2"> $-1$</label>
+        <label class="option-label"><input type="radio" name="q50" value="C" data-correct="true"> $i$</label>
+        <label class="option-label"><input type="radio" name="q50" value="W3"> $-i$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយ៖</div>
+        <ul>
+            <li>សមីការសរសេរជា $(z-i)^2 = 0 \Rightarrow z = i$ (ឫសឌុប)។</li>
+        </ul>
+    </div>
+</div>
+
+                </div>
+
+            <div class="navigation-box" id="navBox">
+                <button type="button" class="nav-btn" id="prevBtn" onclick="changeQuestion(-1)" disabled>⏮ ថយក្រោយ</button>
+                <button type="button" class="nav-btn next-btn" id="nextBtn" onclick="changeQuestion(1)">បន្ទាប់ ⏭</button>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">ផ្ញើចម្លើយ</button>
+        </form>
+    </div>
+
+    <script>
+        let currentQuestionIndex = 0; 
+        let shuffledCards = [];
+        let totalExamPoints = 0;
+        
+        // 🌟 ចាប់ផ្តើមកត់ត្រាម៉ោងភ្លាមៗនៅពេលសិស្សបើកទំព័រវិញ្ញាសា
+        let startTime = new Date(); 
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initQuiz() {
+            const container = document.getElementById('questionsContainer');
+            const cards = Array.from(container.getElementsByClassName('question-card'));
+            
+            totalExamPoints = cards.length * 5;
+            document.getElementById('totalPointsDisplay').innerText = totalExamPoints;
+
+            cards.forEach(card => {
+                const optionsContainer = card.querySelector('.options-container');
+                if (optionsContainer) {
+                    const options = Array.from(optionsContainer.getElementsByClassName('option-label'));
+                    shuffleArray(options);
+                    options.forEach(opt => optionsContainer.appendChild(opt));
+                }
+            });
+
+            shuffleArray(cards);
+            container.innerHTML = '';
+            cards.forEach(card => container.appendChild(card));
+
+            shuffledCards = cards;
+            shuffledCards[0].classList.add('active');
+            
+            updateNavigation();
+        }
+
+        function updateNavigation() {
+            const total = shuffledCards.length;
+            document.getElementById('progressDisplay').innerText = `លំហាត់ទី ${currentQuestionIndex + 1}/${total}`;
+
+            if (currentQuestionIndex === 0) {
+                document.getElementById('prevBtn').disabled = true;
+            } else {
+                document.getElementById('prevBtn').disabled = false;
+            }
+
+            if (currentQuestionIndex === total - 1) {
+                document.getElementById('nextBtn').style.display = 'none';
+                document.getElementById('submitBtn').style.display = 'block';
+            } else {
+                document.getElementById('nextBtn').style.display = 'block';
+                document.getElementById('submitBtn').style.display = 'none';
+            }
+        }
+
+        function changeQuestion(direction) {
+            shuffledCards[currentQuestionIndex].classList.remove('active');
+            currentQuestionIndex += direction;
+            shuffledCards[currentQuestionIndex].classList.add('active');
+            updateNavigation();
+        }
+
+        function calculateGradeFromPercentage(percentage) {
+            let grade = 'F'; let comment = ''; let cssClass = 'grade-F';
+            if (percentage >= 90) { grade = 'A'; comment = '🎉 ល្អប្រសើរណាស់! លោកគ្រូសរសើរ។ អ្នកពិតជាមានសមត្ថភាពខ្ពស់ និងយល់ច្បាស់ពីមេរៀន។ សូមបន្តការខិតខំនេះ!'; cssClass = 'grade-A'; }
+            else if (percentage >= 80) { grade = 'B'; comment = '✨ ល្អណាស់! លទ្ធផលគួរឱ្យមោទនៈ។ បន្ថែមការប្រុងប្រយ័ត្នបន្តិចទៀត អ្នកនឹងបាននិទ្ទេស A ជាក់ជាមិនខាន។'; cssClass = 'grade-B'; }
+            else if (percentage >= 70) { grade = 'C'; comment = '👍 ល្អបង្គួរ! លទ្ធផលល្អ។ ព្យាយាមរំលឹកមេរៀនបន្ថែមលើចំណុចដែលខ្វះខាតដើម្បីពង្រឹងសមត្ថភាព។'; cssClass = 'grade-C'; }
+            else if (percentage >= 60) { grade = 'D'; comment = '👌 កម្រិតមធ្យម! អ្នកបានឆ្លងផុតការវាយតម្លៃ ប៉ុន្តែត្រូវបង្កើនការធ្វើលំហាត់បន្ថែមទៀត។'; cssClass = 'grade-D'; }
+            else if (percentage >= 50) { grade = 'E'; comment = '⚠️ កម្រិតខ្សោយ! ជិតជាប់ហើយ។ សូមខិតខំប្រឹងប្រែងបន្ថែម និងសួរលោកគ្រូត្រង់ចំណុចមិនច្បាស់។'; cssClass = 'grade-E'; }
+            else { grade = 'F'; comment = '❌ មិនទាន់ជាប់ទេ! កុំបាក់ទឹកចិត្តអី។ ពិនិត្យមើលដំណោះស្រាយលម្អិត ហើយព្យាយាមធ្វើឡើងវិញម្តងទៀតណា!'; cssClass = 'grade-F'; }
+            return { grade, comment, cssClass };
+        }
+
+        function submitExam(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('studentName').value.trim();
+            const sClass = document.getElementById('studentClass').value.trim();
+            
+            if (!name || !sClass) {
+                alert('សូមបំពេញឈ្មោះ និងថ្នាក់សិក្សាជាមុនសិន!');
+                shuffledCards[currentQuestionIndex].classList.remove('active');
+                currentQuestionIndex = 0;
+                shuffledCards[currentQuestionIndex].classList.add('active');
+                updateNavigation();
+                return;
+            }
+
+            // 🌟 គណនារយៈពេលដែលសិស្សបានប្រើប្រាស់
+            let endTime = new Date();
+            let timeDiff = endTime - startTime; // គិតជាមីលីវិនាទី
+            timeDiff /= 1000; // ប្តូរទៅជាវិនាទី
+            
+            let seconds = Math.floor(timeDiff % 60);
+            let minutes = Math.floor(timeDiff / 60);
+            
+            let timeString = "";
+            if (minutes > 0) {
+                timeString += `${minutes} នាទី `;
+            }
+            timeString += `${seconds} វិនាទី`;
+            
+            // បង្ហាញរយៈពេលទៅលើ Result Box
+            document.getElementById('timeSpentDisplay').innerText = timeString;
+
+            let score = 0;
+            shuffledCards.forEach((card) => {
+                const radioInput = card.querySelector('input[type="radio"]');
+                if (radioInput) {
+                    const qName = radioInput.name;
+                    const checkedOption = card.querySelector(`input[name="${qName}"]:checked`);
+                    const solutionBox = card.querySelector('.solution-box');
+                    
+                    card.classList.add('active');
+                    if (solutionBox) solutionBox.style.display = 'block';
+
+                    if (checkedOption && checkedOption.getAttribute('data-correct') === 'true') {
+                        score += 5;
+                        card.classList.add('correct-flash');
+                    } else {
+                        card.classList.add('incorrect-flash');
+                    }
+                }
+            });
+
+            document.getElementById('navBox').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('infoBox').style.display = 'none';
+
+            const finalPercentage = Math.round((score / totalExamPoints) * 100);
+            const evaluation = calculateGradeFromPercentage(finalPercentage);
+
+            document.getElementById('studentResultName').innerText = `បេក្ខជន៖ ${name} | ថ្នាក់/បន្ទប់៖ ${sClass}`;
+            document.getElementById('scoreDisplay').innerText = score;
+            document.getElementById('maxPointsDisplay').innerText = totalExamPoints;
+            document.getElementById('percentDisplay').innerText = finalPercentage;
+            
+            const gradeBadge = document.getElementById('gradeDisplay');
+            gradeBadge.innerText = `និទ្ទេស៖ ${evaluation.grade}`;
+            gradeBadge.className = `grade-badge ${evaluation.cssClass}`;
+            
+            document.getElementById('gradeComment').innerText = evaluation.comment;
+            document.getElementById('resultBox').style.display = 'block';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        window.onload = initQuiz;
+    </script>
+
+<script>
+    // ១. ទាញយកឈ្មោះ File ឱ្យបានច្បាស់លាស់ ទោះបើកពី Local ព្រលែងក៏ដោយ
+    let fullPath = window.location.pathname;
+    let fileName = fullPath.substring(fullPath.lastIndexOf('/') + 1);
+    
+    // បន្ថែមការការពារ៖ បើបើកលើ Windows ពេលខ្លះវាប្រើសញ្ញា \ ជំនួសឱ្យ /
+    if (fileName.includes('\\')) {
+        fileName = fileName.substring(fileName.lastIndexOf('\\') + 1);
+    }
+
+    // ២. កាត់យកតែលេខចេញពីឈ្មោះ File (ដក ".html" ចេញ)
+    let lessonNumber = fileName.replace(".html", "");
+
+    // ៣. ដាក់លក្ខខណ្ឌបង្ហាញ៖ បើទាញបានលេខ ឱ្យបង្ហាញលេខ បើទទេឱ្យបង្ហាញសញ្ញាសួរ ?
+    if (lessonNumber !== "" && !isNaN(lessonNumber)) {
+        document.getElementById("lesson-id").innerText = lessonNumber;
+    } else {
+        document.getElementById("lesson-id").innerText = "1"; // លំនាំដើម
+    }
+</script>
+</body>
+</html>
